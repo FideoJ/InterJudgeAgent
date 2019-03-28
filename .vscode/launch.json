@@ -1,0 +1,8 @@
+{
+  "configurations": [{
+    "type": "node",
+    "request": "launch",
+    "name": "judge-server",
+    "program": "${workspaceFolder}/index.js"
+  }]
+}
