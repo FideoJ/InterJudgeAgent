@@ -2,7 +2,7 @@
   "configurations": [{
     "type": "node",
     "request": "launch",
-    "name": "judge-server",
+    "name": "InterJudgeAgent",
     "program": "${workspaceFolder}/index.js"
   }]
 }

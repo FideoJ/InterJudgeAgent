@@ -1,5 +1,5 @@
 {
-  "name": "judge-server",
+  "name": "InterJudgeAgent",
   "dependencies": {
     "koa": "~2.7.0",
     "koa-bodyparser": "~4.2.1",
