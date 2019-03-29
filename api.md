@@ -36,15 +36,14 @@ curl -X DELE E \
     "completed": true,
     "start_time": "2019-03-27 07:25:32.157",
     "end_time": "2019-03-27 07:25:35.157",
-    "test_cases": [{
+    "test_case": [{
         "cpu_time": 500,
         "result": "SUCCESS",
         "memory": 12836864,
         "real_time": 600,
         "signal": 0,
         "exit_code": 0,
-        "output_md5": "eccbc87e4b5ce2fe28308fd9f2a7baf3",
-        "test_case": 1
+        "test_case_id": 1
       },
       {
         "cpu_time": 500,
@@ -53,12 +52,12 @@ curl -X DELE E \
         "real_time": 600,
         "signal": 0,
         "exit_code": 0,
-        "output_md5": "eccbc87e4b5ce2fe28308fd9f2a7baf3",
-        "test_case": 2
+        "test_case_id": 2
       }
     ]
   },
   "file_provider": {
+    "client": "cool",
     "compiler_gpp": "cool",
     "tester": "cool"
   },

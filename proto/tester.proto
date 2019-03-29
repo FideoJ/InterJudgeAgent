@@ -1,17 +1,17 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package tester;
 
 message Request {
-  optional int32 sub_id = 1;
-  optional int32 prob_id = 2;
-  repeated int32 test_case_id = 3;
-  optional string file_provider = 4;
+  int32 sub_id = 1;
+  int32 prob_id = 2;
+  string file_provider = 3;
+  repeated int32 test_case_id = 4;
 }
 
 message Response {
-  optional int32 sub_id = 1;
-  optional ResultType result = 2;
+  int32 sub_id = 1;
+  ResultType result = 2;
   repeated TestCase test_case = 3;
 
   enum ResultType {
@@ -24,11 +24,11 @@ message Response {
   }
 
   message TestCase {
-    optional string case_id = 1;
-    optional ResultType result = 2;
-    optional int32 cpu_time = 3;
-    optional int32 memory = 4;
-    optional int32 exit_code = 5;
-    optional int32 signal = 6;
+    int32 test_case_id = 1;
+    ResultType result = 2;
+    int32 cpu_time = 3;
+    int32 memory = 4;
+    int32 exit_code = 5;
+    int32 signal = 6;
   }
 }
