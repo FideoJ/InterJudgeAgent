@@ -20,20 +20,23 @@ const dispatcher = new Dispatcher();
 judgeRouter.post('/', toMid(validatePOST));
 judgeRouter.post('/',
   async ctx => {
-    const req = ctx.request.body;
-    console.log(req);
-    dispatcher.addTask(req);
+    let judge_id;
     await new Promise(resolve => {
-      setTimeout(resolve, 5 * 1000);
+      dispatcher.onCompleted(() => {
+        clearTimeout(ctx.timer);
+        resolve();
+      });
+      judge_id = dispatcher.addTask(ctx.request.body);
+      ctx.timer = setTimeout(resolve, 5 * 1000);
     });
-    ctx.body = dispatcher.getTask(req.sub_id);
+    ctx.body = dispatcher.getTask(judge_id);
   });
 
 judgeRouter.get('/', toMid(validateGET));
-judgeRouter.get('/', ctx => ctx.body = dispatcher.getTask(ctx.request.query.sub_id));
+judgeRouter.get('/', ctx => ctx.body = dispatcher.getTask(ctx.request.query.judge_id));
 
 judgeRouter.delete('/', toMid(validateDELETE));
-judgeRouter.delete('/', ctx => ctx.body = dispatcher.removeTask(ctx.request.query.sub_id));
+judgeRouter.delete('/', ctx => ctx.body = dispatcher.removeTask(ctx.request.query.judge_id));
 
 const app = new Koa();
 app.use(async (ctx, next) => {

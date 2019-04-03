@@ -4,9 +4,8 @@ const uuid = require('uuid/v4');
 class Mdcli {
   constructor(broker) {
     this.broker = broker;
-    this.timeout = 2500;
+    this.timeout = 100000;
     this.handlers = {};
-    this.connectToBroker();
   }
 
   connectToBroker() {
@@ -21,39 +20,43 @@ class Mdcli {
     this.timeout = timeout;
   }
 
-  send(service, data, handler) {
+  setHandler(service, handler) {
     this.handlers[service] = handler;
+  }
+
+  send(service, data) {
+    if (!this.client)
+      this.connectToBroker();
     this.client.send(['', 'MDPC01', service, data]);
     if (this.hasOwnProperty('timer'))
       clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       this.client.disconnect(this.broker);
+      this.client = null;
       console.warn('permanent error, abandoning request');
     }, this.timeout);
   }
 
   recv(frames) {
-    const msgs = frames.map(frame => frame.toString());
-    // console.log(frames.toString());
-    if (msgs.length < 4) {
-      console.error('INVALID MSG LENGTH');
+    if (frames.length < 4) {
+      console.error('INVALID LENGTH');
       return;
     }
-    if (msgs[0] !== '') {
+    if (frames[0].toString() !== '') {
       console.error('EMPTY FRAME LOST');
       return;
     }
-    if (msgs[1] !== 'MDPC01') {
-      console.error('INVALID MSG HEADER');
+    if (frames[1].toString() !== 'MDPC01') {
+      console.error('INVALID HEADER');
       return;
     }
-    const service = msgs[2];
+    const service = frames[2].toString();
     if (!this.handlers.hasOwnProperty(service)) {
       console.warn(`NO HANDLER FOR ${service}`);
       return;
     }
     clearTimeout(this.timer);
-    this.handlers[service](msgs.slice(3));
+    this.handlers[service](frames.slice(3));
   }
 }
 

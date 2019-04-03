@@ -4,11 +4,12 @@ const ajv = new Ajv();
 const GETSchema = {
   type: 'object',
   properties: {
-    sub_id: {
-      type: 'integer'
+    judge_id: {
+      type: 'string',
+      maxLength: 36
     }
   },
-  required: ['sub_id'],
+  required: ['judge_id'],
   additionalProperties: false
 };
 
@@ -25,7 +26,7 @@ const POSTSchema = {
       type: 'string',
       maxLength: 256
     },
-    src_filename: {
+    sub_src_filename: {
       type: 'array',
       items: {
         type: 'string',
@@ -35,7 +36,25 @@ const POSTSchema = {
       maxItems: 32,
       uniqueItems: true
     },
-    header_filename: {
+    sub_header_filename: {
+      type: 'array',
+      items: {
+        type: 'string',
+        maxLength: 256
+      },
+      maxItems: 32,
+      uniqueItems: true
+    },
+    prob_src_filename: {
+      type: 'array',
+      items: {
+        type: 'string',
+        maxLength: 256
+      },
+      maxItems: 32,
+      uniqueItems: true
+    },
+    prob_header_filename: {
       type: 'array',
       items: {
         type: 'string',
@@ -63,7 +82,7 @@ const POSTSchema = {
       maximum: 128 * 1024 * 1024
     }
   },
-  required: ['sub_id', 'prob_id', 'file_provider', 'src_filename'],
+  required: ['sub_id', 'prob_id', 'file_provider', 'sub_src_filename'],
   additionalProperties: false
 };
 
