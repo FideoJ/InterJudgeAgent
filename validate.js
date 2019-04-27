@@ -82,7 +82,7 @@ const POSTSchema = {
       maximum: 128 * 1024 * 1024
     }
   },
-  required: ['sub_id', 'prob_id', 'file_provider', 'sub_src_filename'],
+  required: ['sub_id', 'prob_id', 'file_provider'],
   additionalProperties: false
 };
 

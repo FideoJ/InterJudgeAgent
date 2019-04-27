@@ -49,8 +49,8 @@ app.use(async (ctx, next) => {
   }
 });
 app.on('error', (err, ctx) => {
-  console.error(ctx.request.toString());
-  console.error(err.toString());
+  console.error(JSON.stringify(ctx.request, 0, 2));
+  console.error(JSON.stringify(err, 0, 2));
 });
 app.use(bodyParser());
 app.use(judgeRouter.routes());

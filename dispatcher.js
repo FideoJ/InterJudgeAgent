@@ -34,9 +34,11 @@ class Dispatcher {
       ]
     };
 
+    this.initStat();
     setInterval(() => this.tasks.save(true), 2 * 60 * 1000);
-    setInterval(() => this.activate(20), 90 * 1000);
+//    setInterval(() => this.activate(20), 90 * 1000);
     setInterval(() => this.clean(100), 10 * 60 * 1000);
+    setInterval(() => this.printStat(), 3 * 1000);
   }
 
   onCompleted(handler) {
@@ -44,6 +46,8 @@ class Dispatcher {
   }
 
   addTask(origin_req) {
+    ++this.stat.TOTAL;
+    ++this.stat.WAITING;
     const judge_id = uuid();
     this.tasks.setKey(judge_id, {
       overview: {
@@ -150,6 +154,7 @@ class Dispatcher {
       overview.completed = true;
       overview.end_time = compiler_gpp.end_time;
       overview.result = result === 'FAIL' ? 'COMPILE_ERROR' : result;
+      this.updateStat(task);
       this.completedHandler();
     } else {
       this.callTester(judge_id);
@@ -204,6 +209,7 @@ class Dispatcher {
     overview.completed = true;
     overview.end_time = tester.end_time;
     overview.result = this.getPrintable(rsp.result, 'tester');
+    this.updateStat(task);
     this.completedHandler();
   }
 
@@ -214,6 +220,68 @@ class Dispatcher {
     if (result === undefined)
       result = 0;
     return this.results_table[service][result] || 'UNKNOWN';
+  }
+
+  initStat() {
+    this.stat = {
+      TOTAL: 0,
+      COMPLETED: 0,
+      WAITING: 0,
+      SYSTEM_ERROR: 0,
+      COMPILE_ERROR: 0,
+      ACCEPTED: 0,
+      PRESENTATION_ERROR: 0,
+      WRONG_ANSWER: 0,
+      TIME_LIMIT_EXCEEDED: 0,
+      MEMORY_LIMIT_EXCEEDED: 0,
+      RUNTIME_ERROR: 0,
+      _500MS: 0,
+      _1S: 0,
+      _3S: 0,
+      _5S: 0,
+      _10S: 0,
+      _15S: 0,
+      _MORE: 0,
+      COMPLETED_TIME: 0
+    };
+  }
+
+  updateStat(task) {
+    const {
+      stat
+    } = this;
+    ++stat.COMPLETED;
+    --stat.WAITING;
+    ++stat[task.overview.result];
+    // ms
+    let duration = new Date(task.overview.end_time) - new Date(task.overview.start_time);
+    stat.COMPLETED_TIME += duration;
+    if (duration < 500) {
+      ++stat._500MS;
+    } else {
+      // s
+      duration = Math.floor(duration / 1000);
+      if (duration < 1)
+        ++stat._1S;
+      else if (duration < 3)
+        ++stat._3S;
+      else if (duration < 5)
+        ++stat._5S;
+      else if (duration < 10)
+        ++stat._10S;
+      else if (duration < 15)
+        ++stat._15S;
+      else
+        ++stat._MORE;
+    }
+  }
+
+  printStat() {
+    for (const statKey in this.stat) {
+      process.stdout.write(`${statKey}: ${this.stat[statKey]} `);
+    }
+    const AVERAGE_TIME = this.stat.COMPLETED === 0 ? 0 : (this.stat.COMPLETED_TIME / this.stat.COMPLETED).toFixed(3);
+    console.log(`AVERAGE_TIME: ${AVERAGE_TIME}`);
   }
 }
 
